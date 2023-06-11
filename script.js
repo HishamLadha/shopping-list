@@ -77,9 +77,6 @@ function getItemFromStorage(){
 
 
 
-
-
-
 // Create button function
 const createButtom = (classes) => {
     const button = document.createElement('button');
@@ -101,14 +98,43 @@ function clearAll(){
     while(itemList.firstChild){
     itemList.removeChild(itemList.firstChild);
    }
+   localStorage.removeItem('items');
 }
    checkUI();
 }
 
-function removeItem(e){
+
+// Remove items from local storage
+// Call a function called onItemClick
+
+function onItemClick(e){
     if(e.target.parentElement.classList.contains('remove-item')){ 
-      e.target.parentElement.parentElement.remove();
-    }
+        // Remove from DOM
+        removeItem(e.target.parentElement.parentElement);
+        
+        // Now remove from local storage
+        removeFromStorage(e.target.parentElement.parentElement.textContent);
+
+      }
+}
+// It calls the removeItems() method
+// Then it calls the removeItemFromStorage() function
+
+// Finally remove items from local storage in the clearAll() function
+
+function removeFromStorage(item){
+    let itemFromStorage = getItemFromStorage();
+
+    // Use the filter function which requires a callback function that checks to see if the item is not equal to an element in the array
+    // Return everything except the element selected basically.
+    // Store that back in the same array which will be stored again in local storage below.
+    itemFromStorage = itemFromStorage.filter((i) =>i !== item);
+    localStorage.setItem('items', JSON.stringify(itemFromStorage));
+    
+}
+
+function removeItem(item){
+    item.remove();
     
     checkUI();
 }
@@ -149,7 +175,7 @@ function init(){
 
 // Event Listeners
 itemForm.addEventListener('submit', addItemOnSubmit);
-itemList.addEventListener('click', removeItem);
+itemList.addEventListener('click', onItemClick);
 clear.addEventListener('click', clearAll);
 filter.addEventListener('input', filterFunctionality);
 document.addEventListener('DOMContentLoaded', displayItems);
