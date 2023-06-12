@@ -1,10 +1,11 @@
-// Variables 
+// Global variables
 const itemForm = document.getElementById('item-form');
 const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
 const clear = document.getElementById('clear');
 const filter = document.getElementById('filter');
 
+// Display items from local storage onto the DOM
 function displayItems(){
     const itemStorageArray = getItemFromStorage();
 
@@ -15,6 +16,7 @@ function displayItems(){
    checkUI();
 }
 
+// Add an item to the DOM and to local storage once the submit button is pressed.
 const addItemOnSubmit = (e) => {
     e.preventDefault(); // So form doesnt actually submit to file
 
@@ -34,6 +36,7 @@ const addItemOnSubmit = (e) => {
     
 }
 
+// Add an item to the DOM
 function addToDOM(item){
 // Create list item
 const li = document.createElement('li');
@@ -46,6 +49,7 @@ li.appendChild(button);
 itemList.appendChild(li);
 }
 
+// Add an item to local storage
 function addToStorage(item){
     
     const itemStorageArray = getItemFromStorage();
@@ -57,6 +61,7 @@ function addToStorage(item){
 
 }
 
+// Get an item from local storage
 function getItemFromStorage(){
     // Declare a variable to work with which will hold everything in local storage
     let itemStorageArray;
@@ -74,39 +79,7 @@ function getItemFromStorage(){
     return itemStorageArray;
 }
 
-
-
-
-// Create button function
-const createButtom = (classes) => {
-    const button = document.createElement('button');
-    button.className = classes;
-    const icon = createIcon('fa-solid fa-xmark');
-    button.appendChild(icon);
-    return button;
-}
-
-const createIcon = (classes) => {
-    const icon = document.createElement('i');
-    icon.className = classes;
-    return icon;
-}
-
-
-function clearAll(){
-    if (confirm('Are you sure?')) {
-    while(itemList.firstChild){
-    itemList.removeChild(itemList.firstChild);
-   }
-   localStorage.removeItem('items');
-}
-   checkUI();
-}
-
-
-// Remove items from local storage
-// Call a function called onItemClick
-
+// Handles the removal of an item
 function onItemClick(e){
     if(e.target.parentElement.classList.contains('remove-item')){ 
         // Remove from DOM
@@ -117,11 +90,8 @@ function onItemClick(e){
 
       }
 }
-// It calls the removeItems() method
-// Then it calls the removeItemFromStorage() function
 
-// Finally remove items from local storage in the clearAll() function
-
+// Remove a list item from local storage
 function removeFromStorage(item){
     let itemFromStorage = getItemFromStorage();
 
@@ -133,10 +103,39 @@ function removeFromStorage(item){
     
 }
 
+// Remove an item from the DOM
 function removeItem(item){
     item.remove();
     
     checkUI();
+}
+
+// Clears all items from the DOM and from local storage
+function clearAll(){
+    if (confirm('Are you sure?')) {
+    while(itemList.firstChild){
+    itemList.removeChild(itemList.firstChild);
+   }
+   // Clear items from local storage
+   localStorage.removeItem('items');
+}
+   checkUI();
+}
+
+// Create button function for a list item (the X mark)
+const createButtom = (classes) => {
+    const button = document.createElement('button');
+    button.className = classes;
+    const icon = createIcon('fa-solid fa-xmark');
+    button.appendChild(icon);
+    return button;
+}
+
+// Create an icon for a list item
+const createIcon = (classes) => {
+    const icon = document.createElement('i');
+    icon.className = classes;
+    return icon;
 }
 
 // Dynamically remove the clearAll and the Filter components when there are no items
@@ -152,7 +151,9 @@ function checkUI(){
     }
 }
 
-
+// Implementing the filter functionality
+// If a list item contains a letter inputted by the user, then display it
+// Else hide it from the DOM using the css style display = 'none';
 function filterFunctionality(e){
     const items = itemList.querySelectorAll('li');
     const text = e.target.value.toLowerCase();
@@ -167,12 +168,10 @@ function filterFunctionality(e){
         }
     });
 
-
-
 }
 
+// Initializes all the event listeners on the page
 function init(){
-
 // Event Listeners
 itemForm.addEventListener('submit', addItemOnSubmit);
 itemList.addEventListener('click', onItemClick);
