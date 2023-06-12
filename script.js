@@ -4,6 +4,8 @@ const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
 const clear = document.getElementById('clear');
 const filter = document.getElementById('filter');
+const formBtn = itemForm.querySelector('button');
+let isEditMode = false;
 
 // Display items from local storage onto the DOM
 function displayItems(){
@@ -25,6 +27,25 @@ const addItemOnSubmit = (e) => {
     if(newItem === ''){
     alert('Please add an item');
     return;
+    }
+
+    // Check for edit mode
+    if(isEditMode){
+        // Select the item that is to be edited 
+        const itemToEdit = itemList.querySelector('.edit-mode');
+
+        // Now remove it from local storage and the DOM
+        removeFromStorage(itemToEdit.textContent);
+        itemToEdit.classList.remove('edit-mode'); // This is not neccessary?
+        itemToEdit.remove();
+        
+        isEditMode = false;
+    }else{
+        if(checkIfItemExists(newItem)){
+            alert('That item already exists!');
+            itemInput.value = '';
+            return;
+        }
     }
     
     addToDOM(newItem);
@@ -84,17 +105,40 @@ function onItemClick(e){
     if(e.target.parentElement.classList.contains('remove-item')){ 
         // Remove from DOM
         removeItem(e.target.parentElement.parentElement);
-        
         // Now remove from local storage
         removeFromStorage(e.target.parentElement.parentElement.textContent);
-
       }
+      else{
+          setItemToEdit(e.target);  
+      }
+}
+
+function checkIfItemExists(item){
+    const itemsFromStorage = getItemFromStorage();
+
+    return itemsFromStorage.includes(item);
+    
+}
+
+function setItemToEdit(item){
+    isEditMode = true;
+    // Everytime an element is clicked, remove any list item that has the class name 'edit-mode' so that the only element with this class is the one selected
+    // This makes sure that only one item is grey
+    itemList.querySelectorAll('li').forEach(i => i.classList.remove('edit-mode'));
+
+    // Set the class of the item to edit mode which changes the color to grey
+    item.classList.add('edit-mode');
+    // Change the icon and the text of the button to say "Update item"
+    formBtn.innerHTML = '<i class="fa-solid fa-pen"></i> Update item';
+    // Change the color of the button to green too.
+    formBtn.style.backgroundColor = '#228B22';
+    // Put the textcontent of the selected item into the input field
+    itemInput.value = item.textContent;
 }
 
 // Remove a list item from local storage
 function removeFromStorage(item){
     let itemFromStorage = getItemFromStorage();
-
     // Use the filter function which requires a callback function that checks to see if the item is not equal to an element in the array
     // Return everything except the element selected basically.
     // Store that back in the same array which will be stored again in local storage below.
@@ -140,6 +184,9 @@ const createIcon = (classes) => {
 
 // Dynamically remove the clearAll and the Filter components when there are no items
 function checkUI(){
+    // Clear input every time
+    itemInput.value = '';
+
     const items = itemList.querySelectorAll('li');
     if(items.length === 0){
         filter.style.display = 'none';
@@ -149,6 +196,13 @@ function checkUI(){
         filter.style.display = 'block';
         clear.style.display = 'block';
     }
+
+    // Always set the button back to default css presets
+    formBtn.innerHTML = '<i class="fa-solid fa-plus"></i> Add Item';
+    formBtn.style.backgroundColor = '#333';
+
+    // Set edit mode back to false;
+    isEditMode = false;
 }
 
 // Implementing the filter functionality
