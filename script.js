@@ -166,6 +166,25 @@ function clearAll(){
    checkUI();
 }
 
+// Implementing the filter functionality
+// If a list item contains a letter inputted by the user, then display it
+// Else hide it from the DOM using the css style display = 'none';
+function filterFunctionality(e){
+    const items = itemList.querySelectorAll('li');
+    const text = e.target.value.toLowerCase();
+    
+    items.forEach((item) =>{
+        const itemText = item.firstChild.textContent.toLowerCase(); // first child is text node
+        
+        if(itemText.indexOf(text) != -1){
+            item.style.display = 'flex';
+        }else{
+            item.style.display = 'none';
+        }
+    });
+
+}
+
 // Create button function for a list item (the X mark)
 const createButtom = (classes) => {
     const button = document.createElement('button');
@@ -205,24 +224,6 @@ function checkUI(){
     isEditMode = false;
 }
 
-// Implementing the filter functionality
-// If a list item contains a letter inputted by the user, then display it
-// Else hide it from the DOM using the css style display = 'none';
-function filterFunctionality(e){
-    const items = itemList.querySelectorAll('li');
-    const text = e.target.value.toLowerCase();
-    
-    items.forEach((item) =>{
-        const itemText = item.firstChild.textContent.toLowerCase(); // first child is text node
-        
-        if(itemText.indexOf(text) != -1){
-            item.style.display = 'flex';
-        }else{
-            item.style.display = 'none';
-        }
-    });
-
-}
 
 // Initializes all the event listeners on the page
 function init(){
@@ -232,7 +233,6 @@ itemList.addEventListener('click', onItemClick);
 clear.addEventListener('click', clearAll);
 filter.addEventListener('input', filterFunctionality);
 document.addEventListener('DOMContentLoaded', displayItems);
-
 }
 
 init();
